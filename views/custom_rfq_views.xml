@@ -113,30 +113,44 @@
 
     
 
+    
+
+    
+
     <record id="view_custom_rfq_search" model="ir.ui.view">
         <field name="name">custom.rfq.search</field>
         <field name="model">custom.rfq</field>
         <field name="arch" type="xml">
             <search string="Search">
                 <field name="name" string="Reference"/>
-                
-                <field name="requested_by_id" string="Requested By"/>
-                <field name="approved_by_id" string="Approved By"/>
-                <field name="transaction_date" string="Transaction Date"/>
-                <field name="order_deadline" string="Order Deadline"/>
-                <field name="state" string="Status"/>
-                
+<field name="transaction_date" string="Date"/>
+<field name="create_uid" string="Created By"/>
+<field name="purpose" string="Purpose"/>
+<field name="state" string="Status"/>
+<field name="order_deadline" string="Deadline Date"/>
+<field name="requested_by_id" string="Requested By"/>
+<field name="approved_by_id" string="Approved By"/>
+<field name="requisition_id" string="Requisition Reference"/>
                 <separator/>
-                <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Approved" name="state_approved" domain="[('state', '=', 'approved')]"/>
-                
+                <filter string="Date" name="filter_transaction_date" date="transaction_date"/>
+<filter string="My Created" name="my_created" domain="[('create_uid', '=', uid)]"/>
+<filter string="Purpose: Purchase" name="purpose_purchase" domain="[('purpose', '=', 'Purchase')]"/>
+<filter string="Purpose: Internal" name="purpose_internal" domain="[('purpose', '=', 'Internal')]"/>
+<filter string="Deadline Date" name="filter_order_deadline" date="order_deadline"/>
+<filter string="My Requests" name="my_requested" domain="[('requested_by_id', '=', uid)]"/>
+<filter string="My Approvals" name="my_approved" domain="[('approved_by_id', '=', uid)]"/>
+<separator/>
+<filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+<filter string="Approved" name="state_approved" domain="[('state', '=', 'approved')]"/>
                 <group>
-                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
-                    
-                    <filter string="Requested By" name="group_requested_by" context="{'group_by': 'requested_by_id'}"/>
-                    <filter string="Approved By" name="group_approved_by" context="{'group_by': 'approved_by_id'}"/>
-                    <filter string="Transaction Date" name="group_transaction_date" context="{'group_by': 'transaction_date'}"/>
-                    <filter string="Order Deadline" name="group_order_deadline" context="{'group_by': 'order_deadline'}"/>
+                    <filter string="Date" name="group_transaction_date" context="{'group_by': 'transaction_date'}"/>
+<filter string="Created By" name="group_create_uid" context="{'group_by': 'create_uid'}"/>
+<filter string="Purpose" name="group_purpose" context="{'group_by': 'purpose'}"/>
+<filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+<filter string="Deadline Date" name="group_order_deadline" context="{'group_by': 'order_deadline'}"/>
+<filter string="Requested By" name="group_requested_by_id" context="{'group_by': 'requested_by_id'}"/>
+<filter string="Approved By" name="group_approved_by_id" context="{'group_by': 'approved_by_id'}"/>
+<filter string="Requisition Reference" name="group_requisition_id" context="{'group_by': 'requisition_id'}"/>
                 </group>
             </search>
         </field>
