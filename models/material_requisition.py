@@ -6,7 +6,7 @@ class MaterialRequisition(models.Model):
     def _default_request_to_ids(self):
         group = self.env.ref('material_requisition.group_material_requisition_approver', raise_if_not_found=False)
         if group:
-            return self.env['res.users'].search([('groups_id', 'in', group.id)]).ids
+            return group.user_ids.ids
         return []
     _name = 'material.requisition'
     _description = 'Material Requisition'
