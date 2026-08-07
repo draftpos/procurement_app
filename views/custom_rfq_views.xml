@@ -11,7 +11,10 @@
                 <field name="order_deadline"/>
                 <field name="amount_untaxed"/>
                 <field name="amount_total"/>
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'pending'" decoration-success="state == 'approved'"/>
+                <field name="requested_by_id" widget="many2one_avatar_user"/>
+                <field name="approved_by_id" widget="many2one_avatar_user"/>
+                <field name="requisition_id"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'pending_approval'" decoration-success="state == 'approved'"/>
             </list>
         </field>
     </record>
