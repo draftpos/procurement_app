@@ -62,7 +62,7 @@ class CustomPurchaseInvoice(models.Model):
     def action_cancel(self):
         for rec in self:
             rec.state = 'cancel'
-
+        
     def action_create_grv(self):
         self.ensure_one()
         grv_vals = {
