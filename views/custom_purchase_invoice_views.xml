@@ -11,6 +11,7 @@
                 <field name="order_deadline"/>
                 <field name="amount_untaxed"/>
                 <field name="amount_total"/>
+                <field name="purchase_order_id"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'pending'" decoration-success="state == 'approved'"/>
             </list>
         </field>
