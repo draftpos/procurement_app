@@ -91,4 +91,39 @@
             </p>
         </field>
     </record>
+
+    
+
+    
+
+    
+
+    <record id="view_custom_grv_search" model="ir.ui.view">
+        <field name="name">custom.grv.search</field>
+        <field name="model">custom.grv</field>
+        <field name="arch" type="xml">
+            <search string="Search">
+                <field name="name" string="Reference"/>
+                <field name="vendor_id" string="Supplier"/>
+                <field name="requested_by_id" string="Requested By"/>
+                <field name="approved_by_id" string="Approved By"/>
+                <field name="transaction_date" string="Transaction Date"/>
+                <field name="order_deadline" string="Order Deadline"/>
+                <field name="state" string="Status"/>
+                
+                <separator/>
+                <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Approved" name="state_approved" domain="[('state', '=', 'approved')]"/>
+                
+                <group>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Supplier" name="group_vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter string="Requested By" name="group_requested_by" context="{'group_by': 'requested_by_id'}"/>
+                    <filter string="Approved By" name="group_approved_by" context="{'group_by': 'approved_by_id'}"/>
+                    <filter string="Transaction Date" name="group_transaction_date" context="{'group_by': 'transaction_date'}"/>
+                    <filter string="Order Deadline" name="group_order_deadline" context="{'group_by': 'order_deadline'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
 </odoo>
