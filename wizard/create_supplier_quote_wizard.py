@@ -8,10 +8,12 @@ class CreateSupplierQuoteWizard(models.TransientModel):
     available_supplier_ids = fields.Many2many('res.partner', compute='_compute_available_suppliers')
     supplier_id = fields.Many2one('res.partner', string='Supplier', required=True, domain="[('id', 'in', available_supplier_ids)]")
 
-    @api.depends('rfq_id')
+    @api.depends('rfq_id', 'rfq_id.supplier_ids', 'rfq_id.supplier_quote_ids')
     def _compute_available_suppliers(self):
         for rec in self:
-            rec.available_supplier_ids = rec.rfq_id.supplier_ids.mapped('partner_id')
+            all_suppliers = rec.rfq_id.supplier_ids.mapped('partner_id')
+            existing_suppliers = rec.rfq_id.supplier_quote_ids.mapped('vendor_id')
+            rec.available_supplier_ids = all_suppliers - existing_suppliers
 
     @api.model
     def default_get(self, fields_list):
@@ -37,6 +39,11 @@ class CreateSupplierQuoteWizard(models.TransientModel):
                 'name': line.name,
             }))
         quote = self.env['custom.supplier.quote'].create(quote_vals)
+        
+        rfq_supplier = self.rfq_id.supplier_ids.filtered(lambda s: s.partner_id == self.supplier_id)
+        if rfq_supplier:
+            rfq_supplier.quote_status = 'received'
+
         return {
             'name': _('Supplier Quote'),
             'type': 'ir.actions.act_window',

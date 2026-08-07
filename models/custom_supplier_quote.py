@@ -21,6 +21,7 @@ class CustomSupplierQuote(models.Model):
     order_deadline = fields.Datetime(string='Order Deadline', tracking=True)
     transaction_date = fields.Datetime(string='Transaction Date', default=fields.Datetime.now, tracking=True)
     approved_by_id = fields.Many2one('res.users', string='Approved By', tracking=True)
+    rfq_id = fields.Many2one('custom.rfq', string='Source RFQ', readonly=True, tracking=True)
     
     state = fields.Selection([
         ('draft', 'DRAFT'),

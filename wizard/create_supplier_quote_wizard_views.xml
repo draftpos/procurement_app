@@ -5,14 +5,17 @@
         <field name="model">wizard.create.supplier.quote</field>
         <field name="arch" type="xml">
             <form string="Create Supplier Quote">
+                <div class="oe_title mb-4">
+                    <p class="text-muted">Select a supplier to generate a new quotation. Suppliers that already have a quote for this RFQ will not appear here.</p>
+                </div>
                 <group>
                     <field name="rfq_id" invisible="1"/>
                     <field name="available_supplier_ids" invisible="1"/>
-                    <field name="supplier_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="supplier_id" options="{'no_create': True, 'no_open': True}" placeholder="Select a supplier..."/>
                 </group>
                 <footer>
-                    <button name="action_create_quote" string="Create Quote" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button name="action_create_quote" string="Create Quote" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
                 </footer>
             </form>
         </field>

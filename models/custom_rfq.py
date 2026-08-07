@@ -27,6 +27,16 @@ class CustomRfq(models.Model):
 
     name = fields.Char(string='Reference', required=True, copy=False, readonly=True, default=lambda self: _('New'))
     supplier_ids = fields.One2many('custom.rfq.supplier', 'rfq_id', string='Suppliers')
+    supplier_quote_ids = fields.One2many('custom.supplier.quote', 'rfq_id', string='Supplier Quotes')
+    all_quotes_created = fields.Boolean(compute='_compute_all_quotes_created')
+
+    @api.depends('supplier_ids', 'supplier_quote_ids')
+    def _compute_all_quotes_created(self):
+        for rec in self:
+            all_suppliers = set(rec.supplier_ids.mapped('partner_id.id'))
+            quoted_suppliers = set(rec.supplier_quote_ids.mapped('vendor_id.id'))
+            rec.all_quotes_created = bool(all_suppliers) and all_suppliers.issubset(quoted_suppliers)
+
     purpose = fields.Selection([('Purchase', 'Purchase'), ('Internal', 'Internal')], string='Purpose', default='Purchase', tracking=True)
     requested_by_id = fields.Many2one('res.users', string='Requested By', default=lambda self: self.env.user, tracking=True)
     request_to_ids = fields.Many2many('res.users', string='Requested To')
