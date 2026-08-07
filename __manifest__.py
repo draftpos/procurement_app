@@ -10,6 +10,7 @@
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'wizard/create_rfq_wizard_views.xml',
+        'wizard/create_supplier_quote_wizard_views.xml',
         'views/material_requisition_views.xml',
         'views/custom_purchase_order_views.xml',
         'views/custom_purchase_invoice_views.xml',

@@ -6,7 +6,7 @@ class CustomGrv(models.Model):
     def _default_request_to_ids(self):
         group = self.env.ref('material_requisition.group_custom_grv_approver', raise_if_not_found=False)
         if group:
-            return group.users.ids
+            return self.env['res.users'].search([('groups_id', 'in', group.id)]).ids
         return []
     _name = 'custom.grv'
     _description = 'GRV'
