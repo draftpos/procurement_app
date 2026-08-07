@@ -9,7 +9,7 @@ class MaterialRequisition(models.Model):
             return group.user_ids.ids
         return []
     _name = 'material.requisition'
-    _description = 'Material Requisition'
+    _description = 'Requisition'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'id desc'
 
@@ -149,12 +149,13 @@ class MaterialRequisition(models.Model):
     def action_create_rfq(self):
         self.ensure_one()
         if self.state != 'approved':
-            raise UserError(_("Hey, you have to wait for the Material Requisition to be approved first!"))
+            raise UserError(_("Hey, you have to wait for the Requisition to be approved first!"))
         
         rfq_vals = {
             'transaction_date': self.transaction_date or fields.Datetime.now(),
             'order_deadline': self.order_deadline,
             'requested_by_id': self.requested_by_id.id,
+            'requisition_id': self.id,
             'line_ids': []
         }
         for line in self.line_ids:
@@ -181,13 +182,14 @@ class MaterialRequisition(models.Model):
     def action_create_po(self):
         self.ensure_one()
         if self.state != 'approved':
-            raise UserError(_("Hey, you have to wait for the Material Requisition to be approved first!"))
+            raise UserError(_("Hey, you have to wait for the Requisition to be approved first!"))
         if not self.line_ids:
             raise UserError(_("Please add some items first."))
             
         po_vals = {
             'vendor_id': self.vendor_id.id if self.vendor_id else False,
             'order_deadline': self.order_deadline or fields.Datetime.now(),
+            'requisition_id': self.id,
             'line_ids': []
         }
         for line in self.line_ids:
@@ -207,13 +209,14 @@ class MaterialRequisition(models.Model):
     def action_create_invoice(self):
         self.ensure_one()
         if self.state != 'approved':
-            raise UserError(_("Hey, you have to wait for the Material Requisition to be approved first!"))
+            raise UserError(_("Hey, you have to wait for the Requisition to be approved first!"))
         if not self.line_ids:
             raise UserError(_("Please add some items first."))
             
         inv_vals = {
             'vendor_id': self.vendor_id.id if self.vendor_id else False,
             'transaction_date': fields.Datetime.now(),
+            'purchase_order_id': self.rfq_ids[0].id if self.rfq_ids else False,
             'line_ids': []
         }
         for line in self.line_ids:
@@ -233,7 +236,7 @@ class MaterialRequisition(models.Model):
     def action_create_grv(self):
         self.ensure_one()
         if self.state != 'approved':
-            raise UserError(_("Hey, you have to wait for the Material Requisition to be approved first!"))
+            raise UserError(_("Hey, you have to wait for the Requisition to be approved first!"))
         if not self.line_ids:
             raise UserError(_("Please add some items first."))
             
@@ -290,7 +293,7 @@ class MaterialRequisition(models.Model):
 
 class MaterialRequisitionLine(models.Model):
     _name = 'material.requisition.line'
-    _description = 'Material Requisition Line'
+    _description = 'Requisition Line'
 
     requisition_id = fields.Many2one('material.requisition', string='Requisition', required=True, ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', required=True)
@@ -333,4 +336,4 @@ class MaterialRequisitionLine(models.Model):
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
     
-    material_requisition_id = fields.Many2one('material.requisition', string='Material Requisition', copy=False)
+    material_requisition_id = fields.Many2one('material.requisition', string='Requisition Reference', copy=False)

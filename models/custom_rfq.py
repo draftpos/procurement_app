@@ -60,6 +60,7 @@ class CustomRfq(models.Model):
     amount_tax = fields.Monetary(string='Taxes', store=True, readonly=True, compute='_amount_all')
     amount_total = fields.Monetary(string='Total Inclusive', store=True, readonly=True, compute='_amount_all')
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
+    requisition_id = fields.Many2one('material.requisition', string='Requisition Reference', readonly=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     notes = fields.Html('Terms and Conditions')
 

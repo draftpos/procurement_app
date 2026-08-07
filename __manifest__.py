@@ -1,8 +1,8 @@
 {
     'name': 'Procurement App',
     'version': '1.0',
-    'summary': 'Manage Material Requests and Automate RFQ, PO, Invoice, and GRV creation',
-    'description': 'Custom Material Requisition app that perfectly integrates with Odoo Purchase, Inventory, and Invoicing.',
+    'summary': 'Manage Requisitions and Automate RFQ, PO, Invoice, and GRV creation',
+    'description': 'Custom Requisition app that perfectly integrates with Odoo Purchase, Inventory, and Invoicing.',
     'author': 'Antigravity',
     'depends': ['base', 'purchase', 'stock', 'account', 'mail'],
     'data': [

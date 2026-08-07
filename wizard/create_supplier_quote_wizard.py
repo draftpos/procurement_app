@@ -29,6 +29,7 @@ class CreateSupplierQuoteWizard(models.TransientModel):
         quote_vals = {
             'vendor_id': self.supplier_id.id,
             'rfq_id': self.rfq_id.id,
+            'requisition_id': self.rfq_id.requisition_id.id,
             'line_ids': []
         }
         for line in self.rfq_id.line_ids:

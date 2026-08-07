@@ -20,6 +20,7 @@ class CustomPurchaseInvoice(models.Model):
     request_to_ids = fields.Many2many('res.users', string='Requested To', default=_default_request_to_ids)
     order_deadline = fields.Datetime(string='Order Deadline', tracking=True)
     transaction_date = fields.Datetime(string='Transaction Date', default=fields.Datetime.now, tracking=True)
+    purchase_order_id = fields.Many2one('custom.purchase.order', string='PO Reference', readonly=True)
     approved_by_id = fields.Many2one('res.users', string='Approved By', tracking=True)
     
     state = fields.Selection([

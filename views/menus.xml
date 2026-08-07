@@ -11,7 +11,7 @@
               sequence="10"/>
 
     <menuitem id="menu_material_requisition"
-              name="Material Requests"
+              name="Requisitions"
               parent="menu_action_menu"
               action="action_material_requisition"
               sequence="10"/>
