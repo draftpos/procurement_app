@@ -37,13 +37,14 @@
                         <group>
                             <field name="vendor_id"/>
                             <field name="purpose"/>
-                            <field name="requested_by_id" readonly="1" widget="badge" decoration-warning="1"/>
+                            <field name="approved_by_id" readonly="1" widget="badge" decoration-success="1"/>
+                            <field name="purchase_invoice_id" readonly="1"/>
                             <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_requisition.group_custom_grv_approver)d)]" required="1"/>
                         </group>
                         <group>
                             <field name="order_deadline" decoration-success="1"/>
                             <field name="transaction_date"/>
-                            <field name="approved_by_id" readonly="1" widget="badge" decoration-info="1"/>
+                            <field name="requested_by_id" readonly="1" widget="badge" decoration-warning="1"/>
                         </group>
                     </group>
                     <notebook>

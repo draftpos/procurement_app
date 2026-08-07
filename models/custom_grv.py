@@ -21,6 +21,7 @@ class CustomGrv(models.Model):
     order_deadline = fields.Datetime(string='Order Deadline', tracking=True)
     transaction_date = fields.Datetime(string='Transaction Date', default=fields.Datetime.now, tracking=True)
     approved_by_id = fields.Many2one('res.users', string='Approved By', tracking=True)
+    purchase_invoice_id = fields.Many2one('custom.purchase.invoice', string='Invoice Reference', readonly=True)
     
     state = fields.Selection([
         ('draft', 'DRAFT'),
