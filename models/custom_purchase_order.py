@@ -65,6 +65,33 @@ class CustomPurchaseOrder(models.Model):
         for rec in self:
             rec.state = 'cancel'
 
+    def action_create_invoice(self):
+        self.ensure_one()
+        inv_vals = {
+            'vendor_id': self.vendor_id.id if self.vendor_id else False,
+            'transaction_date': fields.Datetime.now(),
+            'purchase_order_id': self.id,
+            'line_ids': []
+        }
+        for line in self.line_ids:
+            inv_vals['line_ids'].append((0, 0, {
+                'product_id': line.product_id.id,
+                'name': line.name or line.product_id.name,
+                'product_qty': line.product_qty,
+                'product_uom_id': line.product_uom_id.id,
+                'price_unit': line.price_unit,
+            }))
+            
+        inv = self.env['custom.purchase.invoice'].create(inv_vals)
+        return {
+            'name': _('Purchase Invoice'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'custom.purchase.invoice',
+            'view_mode': 'form',
+            'res_id': inv.id,
+            'target': 'current',
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
