@@ -62,6 +62,33 @@ class CustomSupplierQuote(models.Model):
         for rec in self:
             rec.state = 'cancel'
 
+    def action_create_purchase_order(self):
+        self.ensure_one()
+        po_vals = {
+            'vendor_id': self.vendor_id.id,
+            'purpose': self.purpose,
+            'order_deadline': self.order_deadline,
+            'transaction_date': self.transaction_date,
+            'notes': self.notes,
+            'line_ids': [(0, 0, {
+                'product_id': line.product_id.id,
+                'name': line.name,
+                'product_qty': line.product_qty,
+                'product_uom_id': line.product_uom_id.id,
+                'price_unit': line.price_unit,
+                'taxes_id': [(6, 0, line.taxes_id.ids)],
+                'discount': line.discount,
+            }) for line in self.line_ids]
+        }
+        po = self.env['custom.purchase.order'].create(po_vals)
+        return {
+            'name': _('Purchase Order'),
+            'view_mode': 'form',
+            'res_model': 'custom.purchase.order',
+            'res_id': po.id,
+            'type': 'ir.actions.act_window',
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
