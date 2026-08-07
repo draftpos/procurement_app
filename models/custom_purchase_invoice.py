@@ -63,6 +63,33 @@ class CustomPurchaseInvoice(models.Model):
         for rec in self:
             rec.state = 'cancel'
 
+    def action_create_grv(self):
+        self.ensure_one()
+        grv_vals = {
+            'vendor_id': self.vendor_id.id if self.vendor_id else False,
+            'transaction_date': fields.Datetime.now(),
+            'purchase_invoice_id': self.id,
+            'line_ids': []
+        }
+        for line in self.line_ids:
+            grv_vals['line_ids'].append((0, 0, {
+                'product_id': line.product_id.id,
+                'name': line.name or line.product_id.name,
+                'product_qty': line.product_qty,
+                'product_uom_id': line.product_uom_id.id,
+                'price_unit': line.price_unit,
+            }))
+            
+        grv = self.env['custom.grv'].create(grv_vals)
+        return {
+            'name': _('GRV'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'custom.grv',
+            'view_mode': 'form',
+            'res_id': grv.id,
+            'target': 'current',
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:

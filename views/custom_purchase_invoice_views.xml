@@ -25,8 +25,9 @@
                     <button name="action_submit" string="Submit for Approval" type="object" class="oe_highlight" invisible="state != 'draft'"/>
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight btn-success" invisible="state != 'pending_approval'"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" invisible="state != 'pending_approval'"/>
-                    <button name="action_confirm" string="Confirm Invoice" type="object" class="oe_highlight" invisible="state != 'approved'"/>
-                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('done', 'cancel', 'rejected', 'pending_approval')"/>
+                    <button name="action_confirm" string="Confirm Purchase Invoice" type="object" class="oe_highlight" invisible="state != 'approved'"/>
+                    <button name="action_create_grv" string="Create GRV" type="object" class="oe_highlight" invisible="state != 'invoice'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('invoice', 'cancel', 'rejected', 'pending_approval')"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending_approval,approved,invoice"/>
                 </header>
                 <sheet>
