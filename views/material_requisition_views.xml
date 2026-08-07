@@ -4,7 +4,7 @@
         <field name="name">material.requisition.form</field>
         <field name="model">material.requisition</field>
         <field name="arch" type="xml">
-            <form string="Material Requisition">
+            <form string="Requisition">
                 <header>
                     <button name="action_submit" string="Submit" type="object" invisible="state != 'draft'" class="oe_highlight"/>
                     <button name="action_create_rfq" string="Create RFQ" type="object" invisible="state != 'approved'" class="oe_highlight"/>
@@ -99,7 +99,7 @@
         <field name="name">material.requisition.list</field>
         <field name="model">material.requisition</field>
         <field name="arch" type="xml">
-            <list string="Material Requisitions">
+            <list string="Requisitions">
                 <field name="name"/>
                 <field name="transaction_date"/>
                 <field name="order_deadline"/>
@@ -112,7 +112,7 @@
     </record>
 
     <record id="action_material_requisition" model="ir.actions.act_window">
-        <field name="name">Material Requisitions</field>
+        <field name="name">Requisitions</field>
         <field name="res_model">material.requisition</field>
         <field name="view_mode">list,form</field>
     </record>

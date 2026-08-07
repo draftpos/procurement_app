@@ -15,6 +15,7 @@ class CustomSupplierQuote(models.Model):
 
     name = fields.Char(string='Reference', required=True, copy=False, readonly=True, default=lambda self: _('New'))
     vendor_id = fields.Many2one('res.partner', string='Supplier', tracking=True)
+    requisition_id = fields.Many2one('material.requisition', string='Requisition Reference', readonly=True)
     purpose = fields.Selection([('Purchase', 'Purchase'), ('Internal', 'Internal')], string='Purpose', default='Purchase', tracking=True)
     requested_by_id = fields.Many2one('res.users', string='Requested By', default=lambda self: self.env.user, tracking=True)
     request_to_ids = fields.Many2many('res.users', string='Requested To', default=_default_request_to_ids)
@@ -67,6 +68,7 @@ class CustomSupplierQuote(models.Model):
         self.ensure_one()
         po_vals = {
             'vendor_id': self.vendor_id.id,
+            'requisition_id': self.requisition_id.id,
             'purpose': self.purpose,
             'order_deadline': self.order_deadline,
             'transaction_date': self.transaction_date,

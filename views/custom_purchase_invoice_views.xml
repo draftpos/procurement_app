@@ -44,6 +44,7 @@
                             <field name="order_deadline" decoration-success="1"/>
                             <field name="transaction_date"/>
                             <field name="approved_by_id" readonly="1" widget="badge" decoration-info="1"/>
+                            <field name="purchase_order_id"/>
                         </group>
                     </group>
                     <notebook>

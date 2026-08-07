@@ -44,6 +44,7 @@
                         <group>
                             <field name="order_deadline" decoration-success="1"/>
                             <field name="approved_by_id" readonly="1" widget="badge" decoration-info="1"/>
+                            <field name="requisition_id"/>
                         </group>
                     </group>
                     <separator string="Suppliers"/>
