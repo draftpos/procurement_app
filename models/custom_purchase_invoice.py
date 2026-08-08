@@ -65,6 +65,7 @@ class CustomPurchaseInvoice(models.Model):
                 move_vals = {
                     'move_type': 'in_invoice',
                     'partner_id': rec.vendor_id.id,
+                    'company_id': rec.company_id.id or self.env.company.id,
                     'invoice_date': rec.transaction_date.date() if rec.transaction_date else fields.Date.context_today(self),
                     'invoice_origin': rec.name,
                     'invoice_line_ids': [],
