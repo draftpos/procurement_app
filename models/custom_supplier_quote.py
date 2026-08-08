@@ -54,7 +54,7 @@ class CustomSupplierQuote(models.Model):
             rec.approved_by_id = self.env.user.id
             rec.state = 'approved'
             
-            # Create Standard Odoo RFQ
+            # Create or Update Standard Odoo RFQ
             if not rec.standard_po_id:
                 po_vals = {
                     'partner_id': rec.vendor_id.id,
@@ -74,6 +74,19 @@ class CustomSupplierQuote(models.Model):
                 
                 std_po = self.env['purchase.order'].create(po_vals)
                 rec.standard_po_id = std_po.id
+            else:
+                rec.standard_po_id.order_line.unlink()
+                po_vals = {'order_line': []}
+                for line in rec.line_ids:
+                    po_vals['order_line'].append((0, 0, {
+                        'product_id': line.product_id.id,
+                        'name': line.name or line.product_id.name,
+                        'product_qty': line.product_qty,
+                        'product_uom': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
+                        'price_unit': line.price_unit,
+                        'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                    }))
+                rec.standard_po_id.write(po_vals)
 
     def action_reject(self):
         for rec in self:

@@ -63,6 +63,7 @@ class CustomRfq(models.Model):
     requisition_id = fields.Many2one('material.requisition', string='Requisition Reference', readonly=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     notes = fields.Html('Terms and Conditions')
+    standard_po_ids = fields.Many2many('purchase.order', string='Standard RFQs', readonly=True, copy=False)
 
     def action_submit(self):
         for rec in self:
@@ -72,6 +73,28 @@ class CustomRfq(models.Model):
         for rec in self:
             rec.approved_by_id = self.env.user.id
             rec.state = 'approved'
+            
+            # Create a standard Odoo RFQ (purchase.order) for each supplier
+            standard_pos = self.env['purchase.order']
+            for supplier in rec.supplier_ids:
+                po_vals = {
+                    'partner_id': supplier.partner_id.id,
+                    'date_order': rec.transaction_date or fields.Datetime.now(),
+                    'origin': rec.name,
+                    'order_line': [],
+                }
+                for line in rec.line_ids:
+                    po_vals['order_line'].append((0, 0, {
+                        'product_id': line.product_id.id,
+                        'name': line.name or line.product_id.name,
+                        'product_qty': line.product_qty,
+                        'product_uom': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
+                        'price_unit': line.price_unit,
+                        'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                    }))
+                standard_pos |= self.env['purchase.order'].create(po_vals)
+            
+            rec.standard_po_ids = [(6, 0, standard_pos.ids)]
 
     def action_reject(self):
         for rec in self:
