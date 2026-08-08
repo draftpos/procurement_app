@@ -69,7 +69,7 @@ class CustomSupplierQuote(models.Model):
                         'product_qty': line.product_qty,
                         'product_uom_id': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
                         'price_unit': line.price_unit,
-                        'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                        'tax_ids': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
                     }))
                 
                 std_po = self.env['purchase.order'].create(po_vals)
@@ -84,7 +84,7 @@ class CustomSupplierQuote(models.Model):
                         'product_qty': line.product_qty,
                         'product_uom_id': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
                         'price_unit': line.price_unit,
-                        'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                        'tax_ids': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
                     }))
                 rec.standard_po_id.write(po_vals)
 
