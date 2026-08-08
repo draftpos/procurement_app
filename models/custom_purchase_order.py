@@ -66,6 +66,7 @@ class CustomPurchaseOrder(models.Model):
             if not rec.standard_po_id:
                 po_vals = {
                     'partner_id': rec.vendor_id.id,
+                    'company_id': rec.company_id.id or self.env.company.id,
                     'date_order': rec.transaction_date or fields.Datetime.now(),
                     'origin': rec.name,
                     'order_line': [],
