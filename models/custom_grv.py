@@ -42,6 +42,8 @@ class CustomGrv(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     notes = fields.Html('Terms and Conditions')
 
+    standard_picking_id = fields.Many2one('stock.picking', string='Standard Receipt', readonly=True, copy=False)
+
     def action_submit(self):
         for rec in self:
             rec.state = 'pending_approval'
@@ -58,6 +60,27 @@ class CustomGrv(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = 'done'
+            
+            # Find the standard picking from the PO and validate it
+            if not rec.standard_picking_id and rec.purchase_invoice_id and rec.purchase_invoice_id.purchase_order_id:
+                std_po = rec.purchase_invoice_id.purchase_order_id.standard_po_id
+                if std_po:
+                    # Find a receipt that is ready to be processed
+                    picking = std_po.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+                    if picking:
+                        picking = picking[0]
+                        rec.standard_picking_id = picking.id
+                        
+                        # Map quantities
+                        for grv_line in rec.line_ids:
+                            # Find matching move line in standard picking
+                            for move in picking.move_ids_without_package:
+                                if move.product_id == grv_line.product_id and move.state not in ['done', 'cancel']:
+                                    move.quantity_done = grv_line.product_qty
+                                    break
+                        
+                        # Validate the picking
+                        picking.button_validate()
 
     def action_cancel(self):
         for rec in self:

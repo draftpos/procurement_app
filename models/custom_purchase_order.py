@@ -43,6 +43,7 @@ class CustomPurchaseOrder(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     notes = fields.Html('Terms and Conditions')
+    standard_po_id = fields.Many2one('purchase.order', string='Standard PO', readonly=True, copy=False)
 
     def action_submit(self):
         for rec in self:
@@ -60,6 +61,28 @@ class CustomPurchaseOrder(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = 'po'
+            
+            # Link or Create standard PO and confirm it
+            if not rec.standard_po_id:
+                po_vals = {
+                    'partner_id': rec.vendor_id.id,
+                    'date_order': rec.transaction_date or fields.Datetime.now(),
+                    'origin': rec.name,
+                    'order_line': [],
+                }
+                for line in rec.line_ids:
+                    po_vals['order_line'].append((0, 0, {
+                        'product_id': line.product_id.id,
+                        'name': line.name or line.product_id.name,
+                        'product_qty': line.product_qty,
+                        'product_uom': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
+                        'price_unit': line.price_unit,
+                        'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                    }))
+                rec.standard_po_id = self.env['purchase.order'].create(po_vals)
+            
+            if rec.standard_po_id.state in ['draft', 'sent']:
+                rec.standard_po_id.button_confirm()
 
     def action_cancel(self):
         for rec in self:
