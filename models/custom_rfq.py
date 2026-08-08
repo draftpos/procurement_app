@@ -88,7 +88,7 @@ class CustomRfq(models.Model):
                         'product_id': line.product_id.id,
                         'name': line.name or line.product_id.name,
                         'product_qty': line.product_qty,
-                        'product_uom': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
+                        'product_uom_id': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
                         'price_unit': line.price_unit,
                         'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
                     }))
