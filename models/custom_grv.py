@@ -74,9 +74,9 @@ class CustomGrv(models.Model):
                         # Map quantities
                         for grv_line in rec.line_ids:
                             # Find matching move line in standard picking
-                            for move in picking.move_ids_without_package:
+                            for move in picking.move_ids:
                                 if move.product_id == grv_line.product_id and move.state not in ['done', 'cancel']:
-                                    move.quantity_done = grv_line.product_qty
+                                    move.quantity = grv_line.product_qty
                                     break
                         
                         # Validate the picking
