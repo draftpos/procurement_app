@@ -43,6 +43,8 @@ class CustomSupplierQuote(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     notes = fields.Html('Terms and Conditions')
 
+    standard_po_id = fields.Many2one('purchase.order', string='Standard PO', readonly=True, copy=False)
+
     def action_submit(self):
         for rec in self:
             rec.state = 'pending_approval'
@@ -51,6 +53,27 @@ class CustomSupplierQuote(models.Model):
         for rec in self:
             rec.approved_by_id = self.env.user.id
             rec.state = 'approved'
+            
+            # Create Standard Odoo RFQ
+            if not rec.standard_po_id:
+                po_vals = {
+                    'partner_id': rec.vendor_id.id,
+                    'date_order': rec.transaction_date or fields.Datetime.now(),
+                    'origin': rec.name,
+                    'order_line': [],
+                }
+                for line in rec.line_ids:
+                    po_vals['order_line'].append((0, 0, {
+                        'product_id': line.product_id.id,
+                        'name': line.name or line.product_id.name,
+                        'product_qty': line.product_qty,
+                        'product_uom': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
+                        'price_unit': line.price_unit,
+                        'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                    }))
+                
+                std_po = self.env['purchase.order'].create(po_vals)
+                rec.standard_po_id = std_po.id
 
     def action_reject(self):
         for rec in self:

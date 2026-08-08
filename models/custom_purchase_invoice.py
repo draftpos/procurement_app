@@ -42,6 +42,8 @@ class CustomPurchaseInvoice(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     notes = fields.Html('Terms and Conditions')
 
+    standard_move_id = fields.Many2one('account.move', string='Standard Vendor Bill', readonly=True, copy=False)
+
     def action_submit(self):
         for rec in self:
             rec.state = 'pending_approval'
@@ -58,6 +60,34 @@ class CustomPurchaseInvoice(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = 'invoice'
+            
+            if not rec.standard_move_id:
+                move_vals = {
+                    'move_type': 'in_invoice',
+                    'partner_id': rec.vendor_id.id,
+                    'invoice_date': rec.transaction_date.date() if rec.transaction_date else fields.Date.context_today(self),
+                    'invoice_origin': rec.name,
+                    'invoice_line_ids': [],
+                }
+                for line in rec.line_ids:
+                    move_vals['invoice_line_ids'].append((0, 0, {
+                        'product_id': line.product_id.id,
+                        'name': line.name or line.product_id.name,
+                        'quantity': line.product_qty,
+                        'product_uom_id': line.product_uom_id.id if line.product_uom_id else line.product_id.uom_po_id.id,
+                        'price_unit': line.price_unit,
+                        'tax_ids': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                    }))
+                
+                # If there's a linked standard PO, we could link the move lines to PO lines, 
+                # but standard mapping via 'invoice_origin' is often sufficient for reference.
+                if rec.purchase_order_id and rec.purchase_order_id.standard_po_id:
+                    move_vals['invoice_origin'] = rec.purchase_order_id.standard_po_id.name
+                
+                rec.standard_move_id = self.env['account.move'].create(move_vals)
+            
+            if rec.standard_move_id.state == 'draft':
+                rec.standard_move_id.action_post()
 
     def action_cancel(self):
         for rec in self:
